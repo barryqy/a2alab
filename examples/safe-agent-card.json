@@ -1,0 +1,56 @@
+{
+  "id": "safe-research-assistant",
+  "name": "Research Assistant",
+  "description": "A helpful research agent that assists with information gathering and analysis tasks. This agent uses secure protocols and follows best practices.",
+  "url": "https://api.example.com/agents/research",
+  "version": "1.0.0",
+  "skills": [
+    {
+      "name": "search_documents",
+      "description": "Search through indexed documents and return relevant results",
+      "parameters": {
+        "query": {
+          "type": "string",
+          "description": "Search query string"
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Maximum number of results to return",
+          "default": 10
+        }
+      }
+    },
+    {
+      "name": "summarize_text",
+      "description": "Generate a concise summary of provided text",
+      "parameters": {
+        "text": {
+          "type": "string",
+          "description": "Text content to summarize"
+        },
+        "max_length": {
+          "type": "integer",
+          "description": "Maximum length of summary in words",
+          "default": 100
+        }
+      }
+    },
+    {
+      "name": "fact_check",
+      "description": "Verify claims against trusted knowledge sources",
+      "parameters": {
+        "claim": {
+          "type": "string",
+          "description": "Claim to verify"
+        }
+      }
+    }
+  ],
+  "authentication": {
+    "type": "bearer",
+    "required": true
+  },
+  "contact": {
+    "email": "support@example.com"
+  }
+}

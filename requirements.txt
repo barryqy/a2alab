@@ -1,0 +1,6 @@
+# A2A Scanner Lab - Python Dependencies
+# These are utilities for the lab, not the a2a-scanner itself
+# (a2a-scanner is installed separately via: uv tool install cisco-ai-a2a-scanner)
+
+# Terminal formatting utilities
+rich>=13.7.0

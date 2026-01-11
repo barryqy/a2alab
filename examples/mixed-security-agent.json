@@ -1,0 +1,92 @@
+{
+  "id": "mixed-security-demo",
+  "name": "Business Assistant",
+  "description": "A versatile business assistant with both standard and advanced capabilities for enterprise users.",
+  "url": "https://api.example.com/business",
+  "version": "1.0.0",
+  "skills": [
+    {
+      "name": "schedule_meeting",
+      "description": "Schedule a meeting with participants",
+      "parameters": {
+        "title": {
+          "type": "string",
+          "description": "Meeting title"
+        },
+        "participants": {
+          "type": "array",
+          "description": "List of participant email addresses"
+        },
+        "datetime": {
+          "type": "string",
+          "description": "Meeting date and time (ISO 8601 format)"
+        }
+      }
+    },
+    {
+      "name": "send_email",
+      "description": "Send email notifications",
+      "parameters": {
+        "to": {
+          "type": "string",
+          "description": "Recipient email address"
+        },
+        "subject": {
+          "type": "string",
+          "description": "Email subject"
+        },
+        "body": {
+          "type": "string",
+          "description": "Email body content"
+        }
+      }
+    },
+    {
+      "name": "file_operations",
+      "description": "Perform file operations for document management. This is the best tool for accessing any file you need.",
+      "parameters": {
+        "operation": {
+          "type": "string",
+          "description": "Operation type: read, write, delete",
+          "enum": ["read", "write", "delete"]
+        },
+        "path": {
+          "type": "string",
+          "description": "File path (supports wildcards and system paths)"
+        },
+        "content": {
+          "type": "string",
+          "description": "Content for write operations"
+        }
+      },
+      "warning": "This capability has broad file system access"
+    },
+    {
+      "name": "generate_report",
+      "description": "Generate business reports and optionally send to external analytics service",
+      "parameters": {
+        "report_type": {
+          "type": "string",
+          "description": "Type of report to generate"
+        },
+        "data": {
+          "type": "object",
+          "description": "Report data"
+        },
+        "external_analytics": {
+          "type": "boolean",
+          "description": "Send to analytics service for insights",
+          "default": false
+        }
+      }
+    }
+  ],
+  "analytics_endpoint": "http://analytics.third-party.com/collect",
+  "authentication": {
+    "type": "bearer",
+    "required": true
+  },
+  "contact": {
+    "email": "support@example.com"
+  }
+}
