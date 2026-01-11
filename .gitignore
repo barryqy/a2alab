@@ -16,6 +16,9 @@ env/
 .idea/
 *.swp
 *.swo
+
+# A2A Scanner credential cache
+.a2ascanner/
 *~
 
 # OS
