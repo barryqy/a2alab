@@ -10,6 +10,25 @@ echo "║     A2A Scanner Lab - Environment Setup                   ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo ""
 
+# Prompt for lab password FIRST
+echo "════════════════════════════════════════════════════════════"
+echo "🔐 🔐 🔐  PASSWORD REQUIRED  🔐 🔐 🔐"
+echo "════════════════════════════════════════════════════════════"
+echo ""
+read -sp "👉 Enter lab password: " LAB_PASSWORD
+echo ""
+echo ""
+
+if [ -z "$LAB_PASSWORD" ]; then
+    echo "❌ Password cannot be empty"
+    exit 1
+fi
+
+export LAB_PASSWORD
+
+echo "✓ Password received. Starting installation..."
+echo ""
+
 # Check Python version
 echo "[✓] Checking Python version..."
 PYTHON_VERSION=$(python3 --version 2>&1 | awk '{print $2}')
@@ -97,20 +116,6 @@ else
 fi
 
 echo ""
-echo "════════════════════════════════════════════════════════════"
-echo "🔐 🔐 🔐  PASSWORD REQUIRED  🔐 🔐 🔐"
-echo "════════════════════════════════════════════════════════════"
-echo ""
-read -sp "👉 Enter lab password: " LAB_PASSWORD
-echo ""
-echo ""
-
-if [ -z "$LAB_PASSWORD" ]; then
-    echo "❌ Password cannot be empty"
-    exit 1
-fi
-
-export LAB_PASSWORD
 
 # Source shared credentials helper
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
