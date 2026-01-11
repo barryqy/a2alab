@@ -29,3 +29,6 @@ reports/
 # Temporary files
 *.tmp
 /tmp/
+
+# Reference
+reference/
