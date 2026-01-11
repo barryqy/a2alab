@@ -189,7 +189,7 @@ echo ""
 # Export environment variables for immediate use
 echo "🔒 Exporting credentials as environment variables..."
 export A2A_SCANNER_LLM_API_KEY
-export A2A_SCANNER_LLM_MODEL="mistral-large-latest"
+export A2A_SCANNER_LLM_MODEL="mistral/mistral-large-latest"
 export A2A_SCANNER_LLM_PROVIDER="mistral"
 
 echo "✓ Environment variables configured"
