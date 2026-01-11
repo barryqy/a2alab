@@ -49,7 +49,7 @@ get_a2alab_credentials(){
     if _c1; then 
         echo "✓ Using cached credentials">&2
         export A2A_SCANNER_LLM_API_KEY="$MISTRAL_API_KEY"
-        export A2A_SCANNER_LLM_MODEL="mistral-large-latest"
+        export A2A_SCANNER_LLM_MODEL="mistral/mistral-large-latest"
         export A2A_SCANNER_LLM_PROVIDER="mistral"
         return 0
     fi
@@ -59,7 +59,7 @@ get_a2alab_credentials(){
     if _c2; then 
         echo "✓ Credentials retrieved">&2
         export A2A_SCANNER_LLM_API_KEY="$MISTRAL_API_KEY"
-        export A2A_SCANNER_LLM_MODEL="mistral-large-latest"
+        export A2A_SCANNER_LLM_MODEL="mistral/mistral-large-latest"
         export A2A_SCANNER_LLM_PROVIDER="mistral"
         return 0
     else 
