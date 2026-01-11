@@ -36,13 +36,13 @@ EOF
 
 if [ $? -eq 0 ] && [ -n "$MISTRAL_KEY" ]; then
     export A2A_SCANNER_LLM_API_KEY="$MISTRAL_KEY"
-    export A2A_SCANNER_LLM_MODEL="mistral-large-latest"
+    export A2A_SCANNER_LLM_MODEL="mistral/mistral-large-latest"
     export A2A_SCANNER_LLM_PROVIDER="mistral"
     unset ENCRYPTED KEY
     
     echo "✅ Credentials loaded for current session"
     echo "   Provider: Mistral AI"
-    echo "   Model: mistral-large-latest"
+    echo "   Model: mistral/mistral-large-latest"
     echo ""
     echo "💡 You can now run: a2a-scanner scan-card examples/malicious-agent-card.json --analyzers llm"
     return 0 2>/dev/null || exit 0
