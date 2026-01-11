@@ -29,6 +29,3 @@ reports/
 # Temporary files
 *.tmp
 /tmp/
-
-# Reference materials (don't upload to GitHub)
-reference/
