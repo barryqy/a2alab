@@ -19,11 +19,14 @@ PYTHON_MINOR=$(echo $PYTHON_VERSION | cut -d. -f2)
 
 if [ "$PYTHON_MAJOR" -eq 3 ] && [ "$PYTHON_MINOR" -ge 11 ] && [ "$PYTHON_MINOR" -le 13 ]; then
     echo "    Python $PYTHON_VERSION detected - Compatible!"
+    USE_UV_PYTHON=false
 else
-    echo "    ❌ Python $PYTHON_VERSION detected"
+    echo "    ⚠️  Python $PYTHON_VERSION detected"
     echo "    A2A Scanner requires Python 3.11, 3.12, or 3.13"
-    echo "    Please install a compatible Python version"
-    exit 1
+    echo ""
+    echo "    No worries! We'll use 'uv' to manage Python 3.13 for this lab."
+    echo "    (This won't affect your system Python)"
+    USE_UV_PYTHON=true
 fi
 
 echo ""
@@ -44,20 +47,37 @@ echo ""
 
 # Install A2A Scanner
 echo "[ ] Installing A2A Scanner CLI tool..."
-echo "    Running: uv tool install cisco-ai-a2a-scanner"
+if [ "$USE_UV_PYTHON" = true ]; then
+    echo "    Running: uv tool install --python 3.13 cisco-ai-a2a-scanner"
+    echo "    (uv will automatically download Python 3.13 if needed)"
+else
+    echo "    Running: uv tool install cisco-ai-a2a-scanner"
+fi
 echo ""
 
 # Ensure PATH includes uv bin directory
 export PATH="$HOME/.local/bin:$PATH"
 
-# Install A2A Scanner
-if uv tool install cisco-ai-a2a-scanner; then
-    echo ""
-    echo "[✓] A2A Scanner installed successfully!"
+# Install A2A Scanner with appropriate Python version
+if [ "$USE_UV_PYTHON" = true ]; then
+    if uv tool install --python 3.13 cisco-ai-a2a-scanner; then
+        echo ""
+        echo "[✓] A2A Scanner installed successfully with Python 3.13!"
+        echo "    (Managed by uv, isolated from your system Python)"
+    else
+        echo ""
+        echo "❌ Installation failed. Please check the error messages above."
+        exit 1
+    fi
 else
-    echo ""
-    echo "❌ Installation failed. Please check the error messages above."
-    exit 1
+    if uv tool install cisco-ai-a2a-scanner; then
+        echo ""
+        echo "[✓] A2A Scanner installed successfully!"
+    else
+        echo ""
+        echo "❌ Installation failed. Please check the error messages above."
+        exit 1
+    fi
 fi
 
 echo ""
