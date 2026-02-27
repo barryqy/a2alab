@@ -126,6 +126,57 @@ fi
 
 echo ""
 
+# Make `a2a-scanner` available to future shells without PATH changes.
+# Many remote lab terminals do not source ~/.bashrc or ~/.zshrc, so simply
+# appending to rc files may not take effect. A symlink into an existing PATH
+# directory (e.g., /usr/local/bin) makes the command reliably discoverable.
+echo "[i] Making a2a-scanner available in your terminal..."
+
+SCANNER_CANDIDATE="$HOME/.local/bin/a2a-scanner"
+if command -v a2a-scanner >/dev/null 2>&1; then
+    echo "    ✓ a2a-scanner is already on PATH"
+elif [ -x "$SCANNER_CANDIDATE" ]; then
+    LINKED=false
+
+    # Prefer common PATH locations first.
+    for dir in "/usr/local/bin" "$HOME/bin"; do
+        if [ -d "$dir" ] && [ -w "$dir" ]; then
+            if ln -sf "$SCANNER_CANDIDATE" "$dir/a2a-scanner" 2>/dev/null; then
+                LINKED=true
+                break
+            fi
+        fi
+    done
+
+    # Otherwise, try any writable directory already on PATH.
+    if [ "$LINKED" = false ]; then
+        IFS=':' read -r -a PATH_DIRS <<< "$PATH"
+        for dir in "${PATH_DIRS[@]}"; do
+            [ -n "$dir" ] || continue
+            if [ -d "$dir" ] && [ -w "$dir" ]; then
+                if ln -sf "$SCANNER_CANDIDATE" "$dir/a2a-scanner" 2>/dev/null; then
+                    LINKED=true
+                    break
+                fi
+            fi
+        done
+    fi
+
+    if [ "$LINKED" = true ]; then
+        echo "    ✓ Linked a2a-scanner into a PATH directory"
+    else
+        echo "    ⚠️  Could not link into a PATH directory (permission denied)."
+        echo "       In this terminal, run:"
+        echo "       export PATH=\"\$HOME/.local/bin:\$PATH\""
+    fi
+else
+    echo "    ⚠️  Expected a2a-scanner at '$SCANNER_CANDIDATE' but it wasn't executable."
+    echo "       If you still get 'command not found', run:"
+    echo "       export PATH=\"\$HOME/.local/bin:\$PATH\""
+fi
+
+echo ""
+
 # Persist PATH for future shells (so `a2a-scanner` works after this script exits)
 UV_TOOL_BIN_DIR="$HOME/.local/bin"
 if [[ ":$PATH:" != *":${UV_TOOL_BIN_DIR}:"* ]]; then
