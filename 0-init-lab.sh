@@ -5,10 +5,19 @@
 
 set -e
 
+# Capture the user's PATH as it existed before this script modifies it.
+ORIGINAL_PATH="$PATH"
+
 echo "╔════════════════════════════════════════════════════════════╗"
 echo "║     A2A Scanner Lab - Environment Setup                   ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo ""
+
+# NOTE:
+# This script is typically *executed* (e.g., `bash 0-init-lab.sh`), not sourced.
+# Environment changes like PATH updates do not persist back to the parent shell.
+# We therefore (a) ensure PATH inside this script, and (b) optionally persist the
+# uv tool bin directory into common shell startup files for future terminals.
 
 # Prompt for lab password FIRST
 echo "════════════════════════════════════════════════════════════"
@@ -116,6 +125,43 @@ else
 fi
 
 echo ""
+
+# Persist PATH for future shells (so `a2a-scanner` works after this script exits)
+UV_TOOL_BIN_DIR="$HOME/.local/bin"
+if [[ ":$PATH:" != *":${UV_TOOL_BIN_DIR}:"* ]]; then
+    # (Shouldn't happen inside this script, but keep it defensive.)
+    export PATH="${UV_TOOL_BIN_DIR}:$PATH"
+fi
+
+if [[ ":$ORIGINAL_PATH:" != *":${UV_TOOL_BIN_DIR}:"* ]]; then
+    echo "[i] Ensuring future terminals can find a2a-scanner..."
+    echo "    Adding '${UV_TOOL_BIN_DIR}' to your shell startup (if needed)."
+    echo ""
+
+    # Add a small, idempotent block to common rc files.
+    # We don't rely on $SHELL since remote labs can vary.
+    for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
+        if [ -f "$rc" ]; then
+            if ! grep -q "A2A_SCANNER_LAB_PATH" "$rc" 2>/dev/null; then
+                cat >> "$rc" << 'EOF'
+
+# A2A Scanner Lab PATH (A2A_SCANNER_LAB_PATH)
+export PATH="$HOME/.local/bin:$PATH"
+EOF
+            fi
+        else
+            # Create the file if it doesn't exist (common in minimal lab shells).
+            cat >> "$rc" << 'EOF'
+# A2A Scanner Lab PATH (A2A_SCANNER_LAB_PATH)
+export PATH="$HOME/.local/bin:$PATH"
+EOF
+        fi
+    done
+
+    echo "✓ PATH persistence configured. If `a2a-scanner` is still not found,"
+    echo "  open a new terminal (or run: export PATH=\"\$HOME/.local/bin:\$PATH\")."
+    echo ""
+fi
 
 # Source shared credentials helper
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

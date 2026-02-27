@@ -2,6 +2,10 @@
 # Load cached A2A Scanner credentials for manual use
 # Usage: source ./.load-credentials.sh
 
+# Ensure the uv tool install location is on PATH (common cause of
+# "a2a-scanner: command not found" in fresh terminals).
+export PATH="$HOME/.local/bin:$PATH"
+
 if [ ! -f .a2ascanner/.cache ]; then
     echo "❌ No cached credentials found. Run ./0-init-lab.sh first."
     return 1 2>/dev/null || exit 1
