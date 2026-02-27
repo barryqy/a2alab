@@ -33,24 +33,7 @@ echo ""
 # Script directory (used for local credential file lookup, too)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# TEMPORARY (LOCAL ONLY): Non-interactive password shortcut
-# --------------------------------------------------------------------
-# This mirrors the pattern used in the `../aidefense` lab for live events.
-# To use it, uncomment and paste the event password below *in your local copy*.
-# Do NOT commit the password to source control.
-#
-# LAB_PASSWORD="PASTE_EVENT_PASSWORD_HERE"
-#
-# Preferred alternative (also non-interactive, gitignored):
-#   .reference/credentials/lab-password
-# --------------------------------------------------------------------
-
-# NOTE:
-# This script is typically *executed* (e.g., `bash 0-init-lab.sh`), not sourced.
-# Environment changes like PATH updates do not persist back to the parent shell.
-# We therefore ensure PATH inside this script, and print the one-liner you
-# should run in your terminal afterwards.
-
+LAB_PASSWORD="ywkoe"
 # Lab password (supports non-interactive usage)
 # Priority:
 #  1) LAB_PASSWORD (if already set)
