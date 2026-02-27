@@ -30,28 +30,66 @@ echo "║     A2A Scanner Lab - Environment Setup                   ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo ""
 
+# Script directory (used for local credential file lookup, too)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# TEMPORARY (LOCAL ONLY): Non-interactive password shortcut
+# --------------------------------------------------------------------
+# This mirrors the pattern used in the `../aidefense` lab for live events.
+# To use it, uncomment and paste the event password below *in your local copy*.
+# Do NOT commit the password to source control.
+#
+# LAB_PASSWORD="PASTE_EVENT_PASSWORD_HERE"
+#
+# Preferred alternative (also non-interactive, gitignored):
+#   .reference/credentials/lab-password
+# --------------------------------------------------------------------
+
 # NOTE:
 # This script is typically *executed* (e.g., `bash 0-init-lab.sh`), not sourced.
 # Environment changes like PATH updates do not persist back to the parent shell.
 # We therefore ensure PATH inside this script, and print the one-liner you
 # should run in your terminal afterwards.
 
-# Prompt for lab password FIRST
-echo "════════════════════════════════════════════════════════════"
-echo "🔐 🔐 🔐  PASSWORD REQUIRED  🔐 🔐 🔐"
-echo "════════════════════════════════════════════════════════════"
-echo ""
-read -sp "👉 Enter lab password: " LAB_PASSWORD
-echo ""
-echo ""
+# Lab password (supports non-interactive usage)
+# Priority:
+#  1) LAB_PASSWORD (if already set)
+#  2) A2ALAB_LAB_PASSWORD (if set)
+#  3) .reference/credentials/lab-password (if present)
+#  4) Prompt user
+if [ -z "${LAB_PASSWORD:-}" ] && [ -n "${A2ALAB_LAB_PASSWORD:-}" ]; then
+    LAB_PASSWORD="$A2ALAB_LAB_PASSWORD"
+fi
 
-if [ -z "$LAB_PASSWORD" ]; then
+if [ -z "${LAB_PASSWORD:-}" ]; then
+    for pwfile in \
+        "$SCRIPT_DIR/.reference/credentials/lab-password" \
+        "$PWD/.reference/credentials/lab-password"
+    do
+        if [ -f "$pwfile" ]; then
+            LAB_PASSWORD="$(tr -d '\r\n' < "$pwfile")"
+            break
+        fi
+    done
+fi
+
+if [ -z "${LAB_PASSWORD:-}" ]; then
+    echo "════════════════════════════════════════════════════════════"
+    echo "🔐 🔐 🔐  PASSWORD REQUIRED  🔐 🔐 🔐"
+    echo "════════════════════════════════════════════════════════════"
+    echo ""
+    read -sp "👉 Enter lab password: " LAB_PASSWORD
+    echo ""
+    echo ""
+fi
+
+if [ -z "${LAB_PASSWORD:-}" ]; then
     die "❌ Password cannot be empty"
 fi
 
 export LAB_PASSWORD
 
-echo "✓ Password received. Starting installation..."
+echo "✓ Password set. Starting installation..."
 echo ""
 
 # Check Python version
@@ -140,7 +178,6 @@ fi
 echo ""
 
 # Source shared credentials helper
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/.credentials-helper.sh"
 
 echo "🔄 Fetching credentials from secure source..."
