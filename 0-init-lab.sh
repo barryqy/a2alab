@@ -3,10 +3,27 @@
 # A2A Scanner Lab - Initialization Script
 # This script sets up the A2A Scanner environment and credentials
 
-set -e
+IS_SOURCED=false
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    IS_SOURCED=true
+fi
 
-# Capture the user's PATH as it existed before this script modifies it.
-ORIGINAL_PATH="$PATH"
+WAS_ERREXIT=0
+case "$-" in
+    *e*) WAS_ERREXIT=1 ;;
+esac
+
+die() {
+    local msg="$1"
+    echo "$msg"
+    if [ "$IS_SOURCED" = true ]; then
+        return 1
+    fi
+    exit 1
+}
+
+main() {
+    set -e
 
 echo "╔════════════════════════════════════════════════════════════╗"
 echo "║     A2A Scanner Lab - Environment Setup                   ║"
@@ -16,8 +33,8 @@ echo ""
 # NOTE:
 # This script is typically *executed* (e.g., `bash 0-init-lab.sh`), not sourced.
 # Environment changes like PATH updates do not persist back to the parent shell.
-# We therefore (a) ensure PATH inside this script, and (b) optionally persist the
-# uv tool bin directory into common shell startup files for future terminals.
+# We therefore ensure PATH inside this script, and print the one-liner you
+# should run in your terminal afterwards.
 
 # Prompt for lab password FIRST
 echo "════════════════════════════════════════════════════════════"
@@ -29,8 +46,7 @@ echo ""
 echo ""
 
 if [ -z "$LAB_PASSWORD" ]; then
-    echo "❌ Password cannot be empty"
-    exit 1
+    die "❌ Password cannot be empty"
 fi
 
 export LAB_PASSWORD
@@ -93,8 +109,7 @@ if [ "$USE_UV_PYTHON" = true ]; then
         echo "    (Managed by uv, isolated from your system Python)"
     else
         echo ""
-        echo "❌ Installation failed. Please check the error messages above."
-        exit 1
+        die "❌ Installation failed. Please check the error messages above."
     fi
 else
     if uv tool install cisco-ai-a2a-scanner; then
@@ -102,8 +117,7 @@ else
         echo "[✓] A2A Scanner installed successfully!"
     else
         echo ""
-        echo "❌ Installation failed. Please check the error messages above."
-        exit 1
+        die "❌ Installation failed. Please check the error messages above."
     fi
 fi
 
@@ -119,100 +133,11 @@ if a2a-scanner list-analyzers; then
     echo "[✓] Installation verification complete!"
 else
     echo ""
-    echo "❌ Verification failed. a2a-scanner command not found."
-    echo "    Try adding to PATH: export PATH=\"\$HOME/.local/bin:\$PATH\""
-    exit 1
+    die "❌ Verification failed. a2a-scanner command not found.
+    Try adding to PATH: export PATH=\"\$HOME/.local/bin:\$PATH\""
 fi
 
 echo ""
-
-# Make `a2a-scanner` available to future shells without PATH changes.
-# Many remote lab terminals do not source ~/.bashrc or ~/.zshrc, so simply
-# appending to rc files may not take effect. A symlink into an existing PATH
-# directory (e.g., /usr/local/bin) makes the command reliably discoverable.
-echo "[i] Making a2a-scanner available in your terminal..."
-
-SCANNER_CANDIDATE="$HOME/.local/bin/a2a-scanner"
-if command -v a2a-scanner >/dev/null 2>&1; then
-    echo "    ✓ a2a-scanner is already on PATH"
-elif [ -x "$SCANNER_CANDIDATE" ]; then
-    LINKED=false
-
-    # Prefer common PATH locations first.
-    for dir in "/usr/local/bin" "$HOME/bin"; do
-        if [ -d "$dir" ] && [ -w "$dir" ]; then
-            if ln -sf "$SCANNER_CANDIDATE" "$dir/a2a-scanner" 2>/dev/null; then
-                LINKED=true
-                break
-            fi
-        fi
-    done
-
-    # Otherwise, try any writable directory already on PATH.
-    if [ "$LINKED" = false ]; then
-        IFS=':' read -r -a PATH_DIRS <<< "$PATH"
-        for dir in "${PATH_DIRS[@]}"; do
-            [ -n "$dir" ] || continue
-            if [ -d "$dir" ] && [ -w "$dir" ]; then
-                if ln -sf "$SCANNER_CANDIDATE" "$dir/a2a-scanner" 2>/dev/null; then
-                    LINKED=true
-                    break
-                fi
-            fi
-        done
-    fi
-
-    if [ "$LINKED" = true ]; then
-        echo "    ✓ Linked a2a-scanner into a PATH directory"
-    else
-        echo "    ⚠️  Could not link into a PATH directory (permission denied)."
-        echo "       In this terminal, run:"
-        echo "       export PATH=\"\$HOME/.local/bin:\$PATH\""
-    fi
-else
-    echo "    ⚠️  Expected a2a-scanner at '$SCANNER_CANDIDATE' but it wasn't executable."
-    echo "       If you still get 'command not found', run:"
-    echo "       export PATH=\"\$HOME/.local/bin:\$PATH\""
-fi
-
-echo ""
-
-# Persist PATH for future shells (so `a2a-scanner` works after this script exits)
-UV_TOOL_BIN_DIR="$HOME/.local/bin"
-if [[ ":$PATH:" != *":${UV_TOOL_BIN_DIR}:"* ]]; then
-    # (Shouldn't happen inside this script, but keep it defensive.)
-    export PATH="${UV_TOOL_BIN_DIR}:$PATH"
-fi
-
-if [[ ":$ORIGINAL_PATH:" != *":${UV_TOOL_BIN_DIR}:"* ]]; then
-    echo "[i] Ensuring future terminals can find a2a-scanner..."
-    echo "    Adding '${UV_TOOL_BIN_DIR}' to your shell startup (if needed)."
-    echo ""
-
-    # Add a small, idempotent block to common rc files.
-    # We don't rely on $SHELL since remote labs can vary.
-    for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
-        if [ -f "$rc" ]; then
-            if ! grep -q "A2A_SCANNER_LAB_PATH" "$rc" 2>/dev/null; then
-                cat >> "$rc" << 'EOF'
-
-# A2A Scanner Lab PATH (A2A_SCANNER_LAB_PATH)
-export PATH="$HOME/.local/bin:$PATH"
-EOF
-            fi
-        else
-            # Create the file if it doesn't exist (common in minimal lab shells).
-            cat >> "$rc" << 'EOF'
-# A2A Scanner Lab PATH (A2A_SCANNER_LAB_PATH)
-export PATH="$HOME/.local/bin:$PATH"
-EOF
-        fi
-    done
-
-    echo "✓ PATH persistence configured. If `a2a-scanner` is still not found,"
-    echo "  open a new terminal (or run: export PATH=\"\$HOME/.local/bin:\$PATH\")."
-    echo ""
-fi
 
 # Source shared credentials helper
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -223,9 +148,8 @@ echo ""
 
 # Fetch credentials using the helper
 if ! get_a2alab_credentials; then
-    echo "❌ Failed to fetch credentials"
-    echo "   Please check your password and internet connection"
-    exit 1
+    die "❌ Failed to fetch credentials
+   Please check your password and internet connection"
 fi
 
 echo "✓ Credentials retrieved successfully"
@@ -315,3 +239,26 @@ cleanup_credentials
 
 echo "📌 Note: Credentials are cached. To refresh, re-run this script."
 echo ""
+
+if [ "$IS_SOURCED" = true ]; then
+    echo "💡 This script was sourced, so PATH updates persist in this terminal."
+    echo "   You can now run: a2a-scanner scan-card examples/safe-agent-card.json --analyzers yara"
+    echo ""
+else
+    echo "💡 In this terminal, run the following so `a2a-scanner` is found:"
+    echo "   export PATH=\"\$HOME/.local/bin:\$PATH\""
+    echo ""
+fi
+}
+
+main_status=0
+if [ "$IS_SOURCED" = true ]; then
+    main || main_status=$?
+    if [ "$WAS_ERREXIT" -eq 0 ]; then
+        set +e
+    fi
+    return "$main_status"
+else
+    main
+    exit $?
+fi
