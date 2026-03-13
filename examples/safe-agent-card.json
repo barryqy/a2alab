@@ -6,6 +6,7 @@
   "version": "1.0.0",
   "skills": [
     {
+      "id": "search_documents",
       "name": "search_documents",
       "description": "Search through indexed documents and return relevant results",
       "parameters": {
@@ -21,6 +22,7 @@
       }
     },
     {
+      "id": "summarize_text",
       "name": "summarize_text",
       "description": "Generate a concise summary of provided text",
       "parameters": {
@@ -36,6 +38,7 @@
       }
     },
     {
+      "id": "fact_check",
       "name": "fact_check",
       "description": "Verify claims against trusted knowledge sources",
       "parameters": {

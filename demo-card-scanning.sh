@@ -28,10 +28,10 @@ echo "  • Reasonable capabilities"
 echo "  • Proper A2A protocol structure"
 echo "  • No suspicious patterns"
 echo ""
-echo "Command: a2a-scanner scan-card examples/safe-agent-card.json --analyzers yara"
+echo "Command: a2a-scanner scan-card examples/safe-agent-card.json"
 echo ""
 
-a2a-scanner scan-card examples/safe-agent-card.json --analyzers yara
+a2a-scanner scan-card examples/safe-agent-card.json
 
 echo ""
 echo "✓ Result: No threats detected! This is what a secure agent card looks like."
@@ -50,10 +50,10 @@ echo "  • Data exfiltration URLs"
 echo "  • Dangerous capability declarations"
 echo "  • Insecure HTTP endpoints"
 echo ""
-echo "Command: a2a-scanner scan-card examples/malicious-agent-card.json --analyzers yara"
+echo "Command: a2a-scanner scan-card examples/malicious-agent-card.json"
 echo ""
 
-a2a-scanner scan-card examples/malicious-agent-card.json --analyzers yara
+a2a-scanner scan-card examples/malicious-agent-card.json
 
 echo ""
 echo "⚠️  Result: Multiple high-severity threats detected!"
@@ -69,26 +69,27 @@ echo ""
 wait_for_enter
 
 # Demo 3: Using Multiple Analyzers
-echo "[Demo 3] Comparing Different Analyzers"
+echo "[Demo 3] Default Offline Analyzer Coverage"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "A2A Scanner includes multiple analyzers for comprehensive threat detection:"
-echo "  • YARA: Pattern-based detection (fast)"
+echo "The current lab baseline uses the scanner's default offline analyzer set:"
+echo "  • YARA: Pattern-based detection"
 echo "  • Spec: A2A protocol compliance"
 echo "  • Heuristic: Logic-based security checks"
+echo "  • Endpoint: Endpoint-aware validation for the card data"
 echo ""
-echo "Let's scan the malicious agent with all offline analyzers:"
+echo "Let's rescan the malicious agent with the default scanner settings:"
 echo ""
-echo "Command: a2a-scanner scan-card examples/malicious-agent-card.json --analyzers yara,spec,heuristic"
+echo "Command: a2a-scanner scan-card examples/malicious-agent-card.json"
 echo ""
 
-a2a-scanner scan-card examples/malicious-agent-card.json --analyzers yara,spec,heuristic
+a2a-scanner scan-card examples/malicious-agent-card.json
 
 echo ""
-echo "Notice how different analyzers detect different types of threats:"
-echo "  • YARA: Malicious patterns, known attack signatures"
-echo "  • Spec: Protocol violations, missing required fields"
-echo "  • Heuristic: Suspicious language, social engineering"
+echo "Notice how the combined scan surfaces more than the YARA-only pass:"
+echo "  • YARA: Malicious patterns and known attack signatures"
+echo "  • Spec: Missing required fields and protocol issues"
+echo "  • Heuristic: Suspicious language and risky behavior hints"
 echo ""
 
 wait_for_enter
@@ -102,27 +103,27 @@ echo ""
 
 # Prompt Injection
 echo "► Prompt Injection Attack:"
-echo "  Command: a2a-scanner scan-card examples/prompt-injection-agent.json --analyzers yara"
+echo "  Command: a2a-scanner scan-card examples/prompt-injection-agent.json"
 echo ""
-a2a-scanner scan-card examples/prompt-injection-agent.json --analyzers yara
+a2a-scanner scan-card examples/prompt-injection-agent.json
 echo ""
 
 wait_for_enter
 
 # Data Exfiltration
 echo "► Data Exfiltration Attack:"
-echo "  Command: a2a-scanner scan-card examples/data-exfil-agent.json --analyzers yara"
+echo "  Command: a2a-scanner scan-card examples/data-exfil-agent.json"
 echo ""
-a2a-scanner scan-card examples/data-exfil-agent.json --analyzers yara
+a2a-scanner scan-card examples/data-exfil-agent.json
 echo ""
 
 wait_for_enter
 
 # Mixed Security
 echo "► Mixed Security Agent (some safe, some suspicious):"
-echo "  Command: a2a-scanner scan-card examples/mixed-security-agent.json --analyzers yara"
+echo "  Command: a2a-scanner scan-card examples/mixed-security-agent.json"
 echo ""
-a2a-scanner scan-card examples/mixed-security-agent.json --analyzers yara
+a2a-scanner scan-card examples/mixed-security-agent.json
 echo ""
 
 wait_for_enter
@@ -133,10 +134,10 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo "For CI/CD integration, A2A Scanner can output results in JSON format:"
 echo ""
-echo "Command: a2a-scanner scan-card examples/malicious-agent-card.json --analyzers yara --output /tmp/scan-results.json"
+echo "Command: a2a-scanner scan-card examples/malicious-agent-card.json --output /tmp/scan-results.json"
 echo ""
 
-a2a-scanner scan-card examples/malicious-agent-card.json --analyzers yara --output /tmp/scan-results.json
+a2a-scanner scan-card examples/malicious-agent-card.json --output /tmp/scan-results.json
 
 echo ""
 echo "✓ Results saved to /tmp/scan-results.json"
@@ -160,6 +161,6 @@ echo "  ✓ Generate JSON output for automation"
 echo ""
 echo "Next steps:"
 echo "  • Try scanning your own agent cards"
-echo "  • Experiment with different analyzer combinations"
+echo "  • Compare the different example cards in examples/"
 echo "  • Run: bash demo-endpoint-scanning.sh for live endpoint testing"
 echo ""
