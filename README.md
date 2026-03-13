@@ -75,11 +75,11 @@ a2a-scanner --dev scan-endpoint http://localhost:8000
 a2a-scanner --dev scan-endpoint http://localhost:8001
 ```
 
-### LLM-assisted scan
+### Optional LLM sanity check
 
 ```bash
 source ./lab-env.sh
-a2a-scanner scan-card examples/prompt-injection-agent.json \
+a2a-scanner scan-card examples/malicious-agent-card.json \
   --analyzers llm
 ```
 
