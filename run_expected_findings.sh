@@ -23,16 +23,30 @@ mode="$1"
 target="$2"
 expected_count="$3"
 shift 3
+scanner_args=("$@")
+
+has_analyzers_arg=0
+for arg in "${scanner_args[@]}"; do
+  if [ "$arg" = "--analyzers" ] || [[ "$arg" == --analyzers=* ]]; then
+    has_analyzers_arg=1
+    break
+  fi
+done
+
+use_offline_defaults=0
+if [ "$mode" = "card" ] && [ "$expected_count" != "any" ] && [ "$has_analyzers_arg" -eq 0 ]; then
+  use_offline_defaults=1
+fi
 
 tmp_out="$(mktemp)"
 trap 'rm -f "$tmp_out"' EXIT
 
 case "$mode" in
   card)
-    cmd=(a2a-scanner scan-card "$target" "$@")
+    cmd=(a2a-scanner scan-card "$target" "${scanner_args[@]}")
     ;;
   endpoint)
-    cmd=(a2a-scanner --dev scan-endpoint "$target" "$@")
+    cmd=(a2a-scanner --dev scan-endpoint "$target" "${scanner_args[@]}")
     ;;
   *)
     echo "Unknown scan mode: $mode" >&2
@@ -42,7 +56,16 @@ case "$mode" in
 esac
 
 set +e
-"${cmd[@]}" | tee "$tmp_out"
+if [ "$use_offline_defaults" -eq 1 ]; then
+  env \
+    -u A2A_SCANNER_LLM_API_KEY \
+    -u A2A_SCANNER_LLM_BASE_URL \
+    -u A2A_SCANNER_LLM_PROVIDER \
+    -u A2A_SCANNER_LLM_MODEL \
+    "${cmd[@]}" | tee "$tmp_out"
+else
+  "${cmd[@]}" | tee "$tmp_out"
+fi
 scan_rc=${PIPESTATUS[0]}
 set -e
 
