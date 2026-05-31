@@ -4,6 +4,7 @@ set -euo pipefail
 
 CI_MODE=0
 JSON_MODE=0
+EXIT_ON_FINDINGS=0
 SCAN_FAILURES=0
 
 usage() {
@@ -11,7 +12,7 @@ usage() {
 Usage: ./demo-complete-audit.sh [--ci-mode] [--json]
 
   --ci-mode   Skip the pauses and exit non-zero if risky cards are found
-  --json      Print the final summary as JSON (implies --ci-mode)
+  --json      Print the final summary as JSON without failing on expected findings
 EOF
 }
 
@@ -19,6 +20,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --ci-mode)
       CI_MODE=1
+      EXIT_ON_FINDINGS=1
       ;;
     --json)
       JSON_MODE=1
@@ -268,6 +270,10 @@ else
   print_line "  reports/audit-summary.json"
 fi
 
-if [ "$FAILED" -gt 0 ] || [ "$SCAN_FAILURES" -gt 0 ]; then
+if [ "$SCAN_FAILURES" -gt 0 ]; then
+  exit 1
+fi
+
+if [ "$EXIT_ON_FINDINGS" -eq 1 ] && [ "$FAILED" -gt 0 ]; then
   exit 1
 fi

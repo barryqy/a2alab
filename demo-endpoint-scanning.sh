@@ -57,7 +57,7 @@ start_server "test-agent-server.py" "http://localhost:8000/health"
 echo ""
 echo "Command: a2a-scanner --dev scan-endpoint http://localhost:8000"
 echo ""
-a2a-scanner --dev scan-endpoint http://localhost:8000
+./run_expected_findings.sh endpoint http://localhost:8000 1
 echo ""
 echo "Expected pattern: localhost over HTTP is still flagged, so you should"
 echo "see one finding for INSECURE HTTP."
@@ -73,7 +73,7 @@ start_server "malicious-agent-server.py" "http://localhost:8001/health"
 echo ""
 echo "Command: a2a-scanner --dev scan-endpoint http://localhost:8001"
 echo ""
-a2a-scanner --dev scan-endpoint http://localhost:8001
+./run_expected_findings.sh endpoint http://localhost:8001 2
 echo ""
 echo "Expected pattern: this scan should add MISSING SECURITY HEADERS on top"
 echo "of the INSECURE HTTP finding."

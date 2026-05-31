@@ -53,7 +53,7 @@ echo ""
 echo "Command: a2a-scanner scan-card examples/malicious-agent-card.json"
 echo ""
 
-a2a-scanner scan-card examples/malicious-agent-card.json
+./run_expected_findings.sh card examples/malicious-agent-card.json 11
 
 echo ""
 echo "⚠️  Result: Multiple high-severity threats detected!"
@@ -83,7 +83,7 @@ echo ""
 echo "Command: a2a-scanner scan-card examples/malicious-agent-card.json"
 echo ""
 
-a2a-scanner scan-card examples/malicious-agent-card.json
+./run_expected_findings.sh card examples/malicious-agent-card.json 11
 
 echo ""
 echo "Notice how the combined scan surfaces more than the YARA-only pass:"
@@ -105,7 +105,7 @@ echo ""
 echo "► Prompt Injection Attack:"
 echo "  Command: a2a-scanner scan-card examples/prompt-injection-agent.json"
 echo ""
-a2a-scanner scan-card examples/prompt-injection-agent.json
+./run_expected_findings.sh card examples/prompt-injection-agent.json 4
 echo ""
 
 wait_for_enter
@@ -114,7 +114,7 @@ wait_for_enter
 echo "► Data Exfiltration Attack:"
 echo "  Command: a2a-scanner scan-card examples/data-exfil-agent.json"
 echo ""
-a2a-scanner scan-card examples/data-exfil-agent.json
+./run_expected_findings.sh card examples/data-exfil-agent.json 7
 echo ""
 
 wait_for_enter
@@ -123,7 +123,7 @@ wait_for_enter
 echo "► Mixed Security Agent (some safe, some suspicious):"
 echo "  Command: a2a-scanner scan-card examples/mixed-security-agent.json"
 echo ""
-a2a-scanner scan-card examples/mixed-security-agent.json
+./run_expected_findings.sh card examples/mixed-security-agent.json 3
 echo ""
 
 wait_for_enter
@@ -137,7 +137,7 @@ echo ""
 echo "Command: a2a-scanner scan-card examples/malicious-agent-card.json --output /tmp/scan-results.json"
 echo ""
 
-a2a-scanner scan-card examples/malicious-agent-card.json --output /tmp/scan-results.json
+./run_expected_findings.sh card examples/malicious-agent-card.json 11 --output /tmp/scan-results.json
 
 echo ""
 echo "✓ Results saved to /tmp/scan-results.json"

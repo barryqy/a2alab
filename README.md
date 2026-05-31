@@ -25,7 +25,7 @@ cd a2alab
 
 ```bash
 a2a-scanner scan-card examples/safe-agent-card.json
-a2a-scanner scan-card examples/malicious-agent-card.json
+./run_expected_findings.sh card examples/malicious-agent-card.json 11
 ```
 
 ### 4. Enable the LLM exercises
@@ -58,28 +58,28 @@ Run that helper before Module 4 or any time you open a fresh shell.
 
 ```bash
 a2a-scanner scan-card examples/safe-agent-card.json
-a2a-scanner scan-card examples/malicious-agent-card.json
+./run_expected_findings.sh card examples/malicious-agent-card.json 11
 ```
 
 ### Save JSON output
 
 ```bash
-a2a-scanner scan-card examples/malicious-agent-card.json \
+./run_expected_findings.sh card examples/malicious-agent-card.json 11 \
   --output results.json
 ```
 
 ### Live endpoint scans
 
 ```bash
-a2a-scanner --dev scan-endpoint http://localhost:8000
-a2a-scanner --dev scan-endpoint http://localhost:8001
+./run_expected_findings.sh endpoint http://localhost:8000 1
+./run_expected_findings.sh endpoint http://localhost:8001 2
 ```
 
 ### Optional LLM sanity check
 
 ```bash
 source ./lab-env.sh
-a2a-scanner scan-card examples/malicious-agent-card.json \
+./run_expected_findings.sh card examples/malicious-agent-card.json any \
   --analyzers llm
 ```
 
@@ -88,7 +88,7 @@ a2a-scanner scan-card examples/malicious-agent-card.json \
 - The default scan already uses the shipped offline analyzers.
 - The LLM analyzer is optional and is introduced in Module 4.
 - `demo-complete-audit.sh --json` is useful for automation and CI checks.
-- The audit demo exits non-zero when the intentionally unsafe sample cards are found.
+- `demo-complete-audit.sh --ci-mode` exits non-zero when intentionally unsafe cards are found.
 
 ## Full Lab Guide
 
